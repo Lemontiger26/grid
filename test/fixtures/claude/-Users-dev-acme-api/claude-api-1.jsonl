@@ -10,4 +10,4 @@
 {"type":"user","timestamp":"2026-09-08T11:00:00Z","sessionId":"claude-api-1","cwd":"/Users/dev/acme/api","message":{"role":"user","content":[{"type":"text","text":"PROMPT 2: Now add tests (text-block form, no origin)"}]}}
 {"type":"user","timestamp":"2026-09-09T09:00:00Z","sessionId":"claude-api-1","cwd":"/Users/dev/acme/api","origin":{"kind":"human"},"message":{"role":"user","content":"PROMPT 3: Ship it"}}
 {"type":"assistant","timestamp":"2026-09-09T09:00:04Z","sessionId":"claude-api-1","cwd":"/Users/dev/acme/api","message":{"id":"msg_A3","role":"assistant","content":[{"type":"text","text":"Shipped."}],"usage":{"input_tokens":5,"cache_creation_input_tokens":0,"cache_read_input_tokens":9000,"output_tokens":45}}}
-{"type":"user","timestamp":"2026-09-09T09:05:00Z","sessionId":"claude-api-1","cwd":"/Users/dev/acme/api","message":{"role":"user","content":"TRUNCATED: a session still being written."}}
+{"type":"user","timestamp":"2026-09-09T09:05:00Z","sessionId":"claude-api-1","cwd":"/Users/dev/acme/api","message":{"role":"user","content":"TRUNCATED: a session still being written
