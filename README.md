@@ -31,12 +31,17 @@ SVGs follow the viewer's `prefers-color-scheme`. Each metric has its own colour:
 
 `tokens` means fresh tokens: uncached input + cache writes + output. Cache reads are excluded because they would swamp everything else.
 
-## Tests
+## Development
 
 ```sh
-bun test         # unit tests per module + end-to-end CLI runs against the fixtures
-bun run check    # typecheck src/ and test/
+bun test              # unit tests per module + end-to-end CLI runs against the fixtures
+bun run check         # typecheck (TypeScript 7) src/, test/ and types/
+bun run lint          # type-aware ESLint with the conventions in docs/CONVENTIONS.md
+bun run format        # Prettier (format:check only checks)
+bun run precommit     # all four, as the husky pre-commit hook runs them
 ```
+
+Tooling mirrors `../track`: TypeScript 6 is installed for typescript-eslint and TypeScript 7 as `@typescript/native`, which provides `tsc`. Exported types live in `types/`; transcript records are read as `unknown` and narrowed through `src/json.ts`.
 
 The fixtures in [`test/fixtures/`](test/fixtures/README.md) are a small fictional week of activity, with every expected number written down so you can check the tests against them.
 
