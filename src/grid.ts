@@ -1,15 +1,15 @@
-import { dayKey, type Day, type Days, type Tool } from "./days";
+import { dayKey, type Day, type Days, type Tool } from './days';
 
-export const METRICS = ["prompts", "sessions", "tokens", "commits", "ai"] as const;
+export const METRICS = ['prompts', 'sessions', 'tokens', 'commits', 'ai'] as const;
 export type Metric = (typeof METRICS)[number];
-export type ToolFilter = Tool | "all";
+export type ToolFilter = Tool | 'all';
 
 export const METRIC_LABEL: Record<Metric, string> = {
-  prompts: "prompts",
-  sessions: "agent sessions",
-  tokens: "tokens",
-  commits: "commits",
-  ai: "AI-assisted commits",
+	prompts: 'prompts',
+	sessions: 'agent sessions',
+	tokens: 'tokens',
+	commits: 'commits',
+	ai: 'AI-assisted commits'
 };
 
 /**
@@ -18,8 +18,8 @@ export const METRIC_LABEL: Record<Metric, string> = {
  * cards, soft grey-green muted text).
  */
 export const THEME = {
-  light: { bg: "#ffffff", border: "#e3e7eb", fg: "#1b2733", muted: "#6b7785" },
-  dark: { bg: "#0b0c0c", border: "#1f2422", fg: "#f3f6f4", muted: "#8b938f" },
+	light: { bg: '#ffffff', border: '#e3e7eb', fg: '#1b2733', muted: '#6b7785' },
+	dark: { bg: '#0b0c0c', border: '#1f2422', fg: '#f3f6f4', muted: '#8b938f' }
 } as const;
 
 /**
@@ -27,31 +27,31 @@ export const THEME = {
  * its saturated tag text colour; dark ramps run from a dim tint to a neon accent.
  */
 export const PALETTES: Record<Metric, { dark: string[]; light: string[] }> = {
-  prompts: {
-    // lime: the neon accent of the dark sample, the OUEST tag of the light one
-    dark: ["#222725", "#2a3a16", "#4f7a13", "#8fd12a", "#c4f54a"],
-    light: ["#eef1f4", "#e6f8c2", "#c2e870", "#8cc51e", "#5f8d0b"],
-  },
-  sessions: {
-    // blue: the export button / heatmap blues
-    dark: ["#222725", "#1a2550", "#26408f", "#3667e6", "#7fa3ff"],
-    light: ["#eef1f4", "#dfeaff", "#a9c6ff", "#4f82f2", "#1f5fe0"],
-  },
-  tokens: {
-    // violet: the CENTRE OUEST tag / the Stocks card
-    dark: ["#222725", "#2a1d4d", "#4a2f8f", "#8b5cf6", "#c3a2ff"],
-    light: ["#eef1f4", "#ece2ff", "#cfb5ff", "#9a64f5", "#6d32d9"],
-  },
-  commits: {
-    // mint: the NORD tag / the green cashflow band
-    dark: ["#222725", "#12322b", "#17604f", "#1fb08f", "#5ee9c5"],
-    light: ["#eef1f4", "#d5f5ec", "#94e3cf", "#2fb79a", "#0f7f6d"],
-  },
-  ai: {
-    // rose: the CENTRE-EST tag
-    dark: ["#222725", "#3d1626", "#702447", "#d63d7c", "#ff8db8"],
-    light: ["#eef1f4", "#fde2eb", "#f7afc6", "#e65588", "#b8245a"],
-  },
+	prompts: {
+		// lime: the neon accent of the dark sample, the OUEST tag of the light one
+		dark: ['#222725', '#2a3a16', '#4f7a13', '#8fd12a', '#c4f54a'],
+		light: ['#eef1f4', '#e6f8c2', '#c2e870', '#8cc51e', '#5f8d0b']
+	},
+	sessions: {
+		// blue: the export button / heatmap blues
+		dark: ['#222725', '#1a2550', '#26408f', '#3667e6', '#7fa3ff'],
+		light: ['#eef1f4', '#dfeaff', '#a9c6ff', '#4f82f2', '#1f5fe0']
+	},
+	tokens: {
+		// violet: the CENTRE OUEST tag / the Stocks card
+		dark: ['#222725', '#2a1d4d', '#4a2f8f', '#8b5cf6', '#c3a2ff'],
+		light: ['#eef1f4', '#ece2ff', '#cfb5ff', '#9a64f5', '#6d32d9']
+	},
+	commits: {
+		// mint: the NORD tag / the green cashflow band
+		dark: ['#222725', '#12322b', '#17604f', '#1fb08f', '#5ee9c5'],
+		light: ['#eef1f4', '#d5f5ec', '#94e3cf', '#2fb79a', '#0f7f6d']
+	},
+	ai: {
+		// rose: the CENTRE-EST tag
+		dark: ['#222725', '#3d1626', '#702447', '#d63d7c', '#ff8db8'],
+		light: ['#eef1f4', '#fde2eb', '#f7afc6', '#e65588', '#b8245a']
+	}
 };
 
 /**
@@ -61,7 +61,7 @@ export const PALETTES: Record<Metric, { dark: string[]; light: string[] }> = {
  * Called by: value.
  * Calls: nothing.
  */
-const tools = (t: ToolFilter): Tool[] => (t === "all" ? ["claude", "codex"] : [t]);
+const tools = (t: ToolFilter): Tool[] => (t === 'all' ? ['claude', 'codex'] : [t]);
 
 /**
  * Read one metric off a day's aggregate. Agent metrics are summed over the selected tools;
@@ -72,33 +72,33 @@ const tools = (t: ToolFilter): Tool[] => (t === "all" ? ["claude", "codex"] : [t
  * Calls: tools.
  */
 export function value(d: Day | undefined, metric: Metric, tool: ToolFilter): number {
-  if (!d) return 0;
-  switch (metric) {
-    case "prompts":
-      return tools(tool).reduce((n, t) => n + d.prompts[t], 0);
-    case "sessions":
-      return tools(tool).reduce((n, t) => n + d.sessions[t].size, 0);
-    case "tokens":
-      return tools(tool).reduce((n, t) => n + d.tokens[t], 0);
-    case "commits":
-      return d.commits;
-    case "ai":
-      return d.aiCommits;
-  }
+	if (!d) return 0;
+	switch (metric) {
+		case 'prompts':
+			return tools(tool).reduce((n, t) => n + d.prompts[t], 0);
+		case 'sessions':
+			return tools(tool).reduce((n, t) => n + d.sessions[t].size, 0);
+		case 'tokens':
+			return tools(tool).reduce((n, t) => n + d.tokens[t], 0);
+		case 'commits':
+			return d.commits;
+		case 'ai':
+			return d.aiCommits;
+	}
 }
 
 export interface Cell {
-  key: string;
-  date: Date;
-  value: number;
-  level: number;
-  future: boolean;
+	key: string;
+	date: Date;
+	value: number;
+	level: number;
+	future: boolean;
 }
 
 export interface Grid {
-  weeks: Cell[][]; // columns, Monday..Sunday
-  start: string;
-  end: string;
+	weeks: Cell[][]; // columns, Monday..Sunday
+	start: string;
+	end: string;
 }
 
 /**
@@ -119,8 +119,8 @@ const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), 
  * Calls: addDays.
  */
 export function gridStart(weeks: number, today = new Date()): Date {
-  const mondayOffset = (today.getDay() + 6) % 7;
-  return addDays(today, -mondayOffset - (weeks - 1) * 7);
+	const mondayOffset = (today.getDay() + 6) % 7;
+	return addDays(today, -mondayOffset - (weeks - 1) * 7);
 }
 
 /**
@@ -133,35 +133,39 @@ export function gridStart(weeks: number, today = new Date()): Date {
  * Calls: gridStart, addDays, dayKey, value.
  */
 export function buildGrid(days: Days, metric: Metric, tool: ToolFilter, weeks: number, today = new Date()): Grid {
-  const start = gridStart(weeks, today);
-  const todayKey = dayKey(today);
-  const cols: Cell[][] = [];
-  for (let w = 0; w < weeks; w++) {
-    const col: Cell[] = [];
-    for (let i = 0; i < 7; i++) {
-      const date = addDays(start, w * 7 + i);
-      const key = dayKey(date);
-      col.push({ key, date, value: value(days.get(key), metric, tool), level: 0, future: key > todayKey });
-    }
-    cols.push(col);
-  }
+	const start = gridStart(weeks, today);
+	const todayKey = dayKey(today);
+	const cols: Cell[][] = [];
+	for (let w = 0; w < weeks; w++) {
+		const col: Cell[] = [];
+		for (let i = 0; i < 7; i++) {
+			const date = addDays(start, w * 7 + i);
+			const key = dayKey(date);
+			col.push({ key, date, value: value(days.get(key), metric, tool), level: 0, future: key > todayKey });
+		}
+		cols.push(col);
+	}
 
-  const active = cols.flat().map((c) => c.value).filter((v) => v > 0).sort((a, b) => a - b);
-  const q = (p: number) => active[Math.min(active.length - 1, Math.floor(p * active.length))] ?? 0;
-  const [q1, q2, q3] = [q(0.25), q(0.5), q(0.75)];
-  for (const c of cols.flat()) {
-    c.level = c.value <= 0 ? 0 : c.value <= q1 ? 1 : c.value <= q2 ? 2 : c.value <= q3 ? 3 : 4;
-  }
-  return { weeks: cols, start: dayKey(start), end: todayKey };
+	const active = cols
+		.flat()
+		.map((c) => c.value)
+		.filter((v) => v > 0)
+		.sort((a, b) => a - b);
+	const q = (p: number) => active[Math.min(active.length - 1, Math.floor(p * active.length))] ?? 0;
+	const [q1, q2, q3] = [q(0.25), q(0.5), q(0.75)];
+	for (const c of cols.flat()) {
+		c.level = c.value <= 0 ? 0 : c.value <= q1 ? 1 : c.value <= q2 ? 2 : c.value <= q3 ? 3 : 4;
+	}
+	return { weeks: cols, start: dayKey(start), end: todayKey };
 }
 
 export interface Summary {
-  total: number;
-  activeDays: number;
-  totalDays: number;
-  currentStreak: number;
-  longestStreak: number;
-  busiest: Cell | null;
+	total: number;
+	activeDays: number;
+	totalDays: number;
+	currentStreak: number;
+	longestStreak: number;
+	busiest: Cell | null;
 }
 
 /**
@@ -173,28 +177,28 @@ export interface Summary {
  * Calls: nothing.
  */
 export function summarize(grid: Grid): Summary {
-  const cells = grid.weeks.flat().filter((c) => !c.future);
-  let longest = 0;
-  let run = 0;
-  for (const c of cells) {
-    run = c.value > 0 ? run + 1 : 0;
-    longest = Math.max(longest, run);
-  }
-  let current = 0;
-  for (let i = cells.length - 1; i >= 0; i--) {
-    if (cells[i]!.value > 0) current++;
-    else if (i === cells.length - 1) continue;
-    else break;
-  }
-  const busiest = cells.reduce<Cell | null>((b, c) => (c.value > (b?.value ?? 0) ? c : b), null);
-  return {
-    total: cells.reduce((n, c) => n + c.value, 0),
-    activeDays: cells.filter((c) => c.value > 0).length,
-    totalDays: cells.length,
-    currentStreak: current,
-    longestStreak: longest,
-    busiest,
-  };
+	const cells = grid.weeks.flat().filter((c) => !c.future);
+	let longest = 0;
+	let run = 0;
+	for (const c of cells) {
+		run = c.value > 0 ? run + 1 : 0;
+		longest = Math.max(longest, run);
+	}
+	let current = 0;
+	for (let i = cells.length - 1; i >= 0; i--) {
+		if (cells[i]!.value > 0) current++;
+		else if (i === cells.length - 1) continue;
+		else break;
+	}
+	const busiest = cells.reduce<Cell | null>((b, c) => (c.value > (b?.value ?? 0) ? c : b), null);
+	return {
+		total: cells.reduce((n, c) => n + c.value, 0),
+		activeDays: cells.filter((c) => c.value > 0).length,
+		totalDays: cells.length,
+		currentStreak: current,
+		longestStreak: longest,
+		busiest
+	};
 }
 
 /**
@@ -205,9 +209,15 @@ export function summarize(grid: Grid): Summary {
  * Calls: nothing.
  */
 export const fmt = (n: number): string =>
-  n >= 1e9 ? `${(n / 1e9).toFixed(1)}B` : n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : n >= 1e4 ? `${(n / 1e3).toFixed(1)}k` : n.toLocaleString("en-US");
+	n >= 1e9
+		? `${(n / 1e9).toFixed(1)}B`
+		: n >= 1e6
+			? `${(n / 1e6).toFixed(1)}M`
+			: n >= 1e4
+				? `${(n / 1e3).toFixed(1)}k`
+				: n.toLocaleString('en-US');
 
-export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 /**
  * Work out where month labels go above the grid: on each column whose Monday falls in a
@@ -218,12 +228,12 @@ export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "
  * Calls: nothing.
  */
 export function monthLabels(grid: Grid): Map<number, string> {
-  const labels = new Map<number, string>();
-  let last = -1;
-  grid.weeks.forEach((col, i) => {
-    const m = col[0]!.date.getMonth();
-    if (m !== last) labels.set(i, MONTHS[m]!);
-    last = m;
-  });
-  return labels;
+	const labels = new Map<number, string>();
+	let last = -1;
+	grid.weeks.forEach((col, i) => {
+		const m = col[0]!.date.getMonth();
+		if (m !== last) labels.set(i, MONTHS[m]!);
+		last = m;
+	});
+	return labels;
 }

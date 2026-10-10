@@ -1,9 +1,9 @@
-import { monthLabels, PALETTES, type Grid, type Metric } from "../grid";
+import { monthLabels, PALETTES, type Grid, type Metric } from '../grid';
 
 const color = process.stdout.isTTY && !process.env.NO_COLOR;
-const RESET = "\x1b[0m";
-const MONO = [" ·", " ░", " ▒", " ▓", " █"];
-const WEEKDAYS = ["Mon", "", "Wed", "", "Fri", "", ""];
+const RESET = '\x1b[0m';
+const MONO = [' ·', ' ░', ' ▒', ' ▓', ' █'];
+const WEEKDAYS = ['Mon', '', 'Wed', '', 'Fri', '', ''];
 
 /**
  * Wrap text in ANSI dim, or leave it plain when stdout isn't a colour TTY.
@@ -31,9 +31,9 @@ export const bold = (s: string) => (color ? `\x1b[1m${s}${RESET}` : s);
  * Calls: nothing.
  */
 function fg(hex: string, s: string): string {
-  if (!color) return s;
-  const n = parseInt(hex.slice(1), 16);
-  return `\x1b[38;2;${(n >> 16) & 255};${(n >> 8) & 255};${n & 255}m${s}${RESET}`;
+	if (!color) return s;
+	const n = parseInt(hex.slice(1), 16);
+	return `\x1b[38;2;${(n >> 16) & 255};${(n >> 8) & 255};${n & 255}m${s}${RESET}`;
 }
 
 /**
@@ -44,7 +44,7 @@ function fg(hex: string, s: string): string {
  * Called by: renderGrid.
  * Calls: fg.
  */
-const cell = (metric: Metric, level: number) => (color ? fg(PALETTES[metric].dark[level]!, " ■") : MONO[level]!);
+const cell = (metric: Metric, level: number) => (color ? fg(PALETTES[metric].dark[level]!, ' ■') : MONO[level]!);
 
 /**
  * Render the grid for the terminal: a month header, seven weekday rows (Mon..Sun) with two
@@ -56,27 +56,27 @@ const cell = (metric: Metric, level: number) => (color ? fg(PALETTES[metric].dar
  * Calls: monthLabels, cell, dim.
  */
 export function renderGrid(grid: Grid, metric: Metric): string {
-  const lines: string[] = [];
+	const lines: string[] = [];
 
-  const labels = [...monthLabels(grid)];
-  let header = "    ";
-  labels.forEach(([col, name], i) => {
-    const next = labels[i + 1]?.[0] ?? Infinity;
-    if (next - col < 2) return;
-    header = header.padEnd(4 + col * 2) + " " + name;
-  });
-  lines.push(dim(header));
+	const labels = [...monthLabels(grid)];
+	let header = '    ';
+	labels.forEach(([col, name], i) => {
+		const next = labels[i + 1]?.[0] ?? Infinity;
+		if (next - col < 2) return;
+		header = header.padEnd(4 + col * 2) + ' ' + name;
+	});
+	lines.push(dim(header));
 
-  for (let row = 0; row < 7; row++) {
-    let line = dim(WEEKDAYS[row]!.padEnd(4));
-    for (const col of grid.weeks) {
-      const c = col[row]!;
-      line += c.future ? "  " : cell(metric, c.level);
-    }
-    lines.push(line);
-  }
+	for (let row = 0; row < 7; row++) {
+		let line = dim(WEEKDAYS[row]!.padEnd(4));
+		for (const col of grid.weeks) {
+			const c = col[row]!;
+			line += c.future ? '  ' : cell(metric, c.level);
+		}
+		lines.push(line);
+	}
 
-  const legend = [0, 1, 2, 3, 4].map((l) => cell(metric, l)).join("");
-  lines.push("    " + " ".repeat(Math.max(0, grid.weeks.length * 2 - 16)) + dim("Less") + legend + dim(" More"));
-  return lines.join("\n");
+	const legend = [0, 1, 2, 3, 4].map((l) => cell(metric, l)).join('');
+	lines.push('    ' + ' '.repeat(Math.max(0, grid.weeks.length * 2 - 16)) + dim('Less') + legend + dim(' More'));
+	return lines.join('\n');
 }
