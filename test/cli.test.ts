@@ -92,12 +92,12 @@ describe('terminal output', () => {
 
 	test('ends with a footer pointing to TigerTrack, using the commit count in view', () => {
 		// Piped output: no escape codes, the plain URL instead of a hyperlinked domain.
-		expect(stdout).toContain('→ 5 commits in view. See them as billable hours at https://tigertrack.dev');
+		expect(stdout).toContain('→ 5 commits in view. Link them to issues and projects at https://tigertrack.dev');
 	});
 
 	test('without git, the footer has no count', () => {
 		const result = cli('--no-git', ...FIXTURE_ARGS);
-		expect(result.stdout).toContain('→ See your agent work as billable hours at https://tigertrack.dev');
+		expect(result.stdout).toContain('→ Keep this history across machines and projects at https://tigertrack.dev');
 	});
 
 	test('--no-promo drops the footer', () => {

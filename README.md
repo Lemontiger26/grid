@@ -19,7 +19,9 @@ Run `bun start --help` for all flags.
 | `bun run svg:all` | `out/tigergrid-<metric>.svg` for all five metrics |
 | `bun run json` | `out/tigergrid.json`, per-day sessions/prompts/tokens/commits/projects. Flags pass through too. |
 
-SVGs follow the viewer's `prefers-color-scheme`. To embed one in a GitHub README, wrap it in a link, because GitHub shows SVGs as images and links inside them aren't clickable there:
+SVGs follow the viewer's `prefers-color-scheme`. Each metric has its own colour: lime (prompts), blue (sessions), violet (tokens), mint (commits), rose (AI-assisted commits). Light ramps run from pastel tag fills to saturated tag text; dark ramps go from dim tints to neon on a near-black card. Colours live in `PALETTES` / `THEME` in `src/grid.ts`.
+
+To embed one in a GitHub README, wrap it in a link, because GitHub shows SVGs as images and links inside them aren't clickable there:
 
 ```md
 [![My agent activity](tigergrid.svg)](https://tigertrack.dev/?utm_source=tigergrid&utm_medium=readme)
@@ -27,7 +29,7 @@ SVGs follow the viewer's `prefers-color-scheme`. To embed one in a GitHub README
 
 ### TigerTrack
 
-TigerGrid shows what your agents did; [TigerTrack](https://tigertrack.dev) turns that work into billable hours and timesheets. The terminal output ends with one line pointing there, and SVGs carry a small "Made with TigerGrid · tigertrack.dev" credit. `--no-promo` removes both. Nothing is sent anywhere: the links are plain links, tagged with `utm_source=tigergrid` so TigerTrack can see where visitors came from. Each metric has its own colour: lime (prompts), blue (sessions), violet (tokens), mint (commits), rose (AI-assisted commits). Light ramps run from pastel tag fills to saturated tag text; dark ramps go from dim tints to neon on a near-black card. Colours live in `PALETTES` / `THEME` in `src/grid.ts`.
+TigerGrid shows what you and your agents did on this machine. [TigerTrack](https://tigertrack.dev) is the optional hosted service: it keeps that history across machines and tools, organizes it into projects and links commits and sessions to the issues they belong to. The terminal output ends with one line pointing there, and SVGs carry a small "Made with TigerGrid · tigertrack.dev" credit. `--no-promo` removes both. Nothing is sent anywhere: the links are plain links, tagged with `utm_source=tigergrid` so TigerTrack can see where visitors came from.
 
 ## Sources and counting rules
 

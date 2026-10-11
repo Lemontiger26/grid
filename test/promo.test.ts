@@ -10,13 +10,13 @@ describe('promoUrl', () => {
 
 describe('footerText', () => {
 	test("uses the user's own commit count when there is one", () => {
-		expect(footerText(939)).toBe('→ 939 commits in view. See them as billable hours at');
-		expect(footerText(12_400)).toBe('→ 12.4k commits in view. See them as billable hours at');
+		expect(footerText(939)).toBe('→ 939 commits in view. Link them to issues and projects at');
+		expect(footerText(12_400)).toBe('→ 12.4k commits in view. Link them to issues and projects at');
 	});
 
 	test('falls back to a generic line without git data or commits', () => {
-		expect(footerText(null)).toBe('→ See your agent work as billable hours at');
-		expect(footerText(0)).toBe('→ See your agent work as billable hours at');
+		expect(footerText(null)).toBe('→ Keep this history across machines and projects at');
+		expect(footerText(0)).toBe('→ Keep this history across machines and projects at');
 	});
 });
 
