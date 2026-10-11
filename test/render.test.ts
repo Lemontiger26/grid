@@ -66,3 +66,28 @@ describe('renderSvg', () => {
 		expect(svg).toContain('<tspan class="v">5</tspan> active days');
 	});
 });
+
+describe('renderSvg credit', () => {
+	/** Render an empty grid of `weeks` columns, with or without the credit. */
+	const svgOf = (weeks: number, credit = true) => {
+		const sized = buildGrid(days, 'prompts', 'all', weeks, TODAY);
+		return renderSvg(sized, 'prompts', summarize(sized), 'Agent activity', credit);
+	};
+
+	test('a wide card gets the full credit line, linked to TigerTrack with UTM tags', () => {
+		const svg = svgOf(30);
+		expect(svg).toContain('>Made with TigerGrid · tigertrack.dev</text></a>');
+		expect(svg).toContain('<a href="https://tigertrack.dev/?utm_source=tigergrid&#38;utm_medium=svg"');
+		expect(svg).toContain('xmlns:xlink="http://www.w3.org/1999/xlink"');
+	});
+
+	test('a narrow card gets just the domain, a tiny one nothing', () => {
+		expect(svgOf(14)).toContain('>tigertrack.dev</text></a>');
+		expect(svgOf(14)).not.toContain('Made with');
+		expect(svgOf(2)).not.toContain('tigertrack.dev');
+	});
+
+	test('credit=false leaves it out', () => {
+		expect(svgOf(30, false)).not.toContain('tigertrack.dev');
+	});
+});

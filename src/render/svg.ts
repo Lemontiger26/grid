@@ -1,5 +1,6 @@
 import type { Grid, Metric, Summary, Theme } from '../../types/grid';
 import { fmt, METRIC_LABEL, monthLabels, PALETTES, THEME } from '../grid';
+import { creditText, promoUrl } from '../promo';
 
 const SIZE = 11;
 const GAP = 3;
@@ -44,11 +45,15 @@ const surfaceVars = (theme: Theme) =>
  * media query switches between the light and dark ramps, so the same file suits light and
  * dark READMEs.
  *
+ * Unless `credit` is false, a "Made with TigerGrid · tigertrack.dev" line links to TigerTrack.
+ * The link is clickable where the SVG is opened directly; an `<img>` embed (e.g. a GitHub
+ * README) needs a Markdown link around the image instead.
+ *
  * @returns the SVG document as a string (no external assets or fonts).
  * Called by: cli (`--svg`).
- * Calls: monthLabels, fmt, esc, levelVars, surfaceVars.
+ * Calls: monthLabels, fmt, esc, levelVars, surfaceVars, creditText, promoUrl.
  */
-export function renderSvg(grid: Grid, metric: Metric, summary: Summary, title: string): string {
+export function renderSvg(grid: Grid, metric: Metric, summary: Summary, title: string, credit = true): string {
 	const { dark, light } = PALETTES[metric];
 	const width = LEFT + grid.weeks.length * STEP + PAD + 10;
 	const height = TOP + 7 * STEP + 44;
@@ -60,6 +65,7 @@ export function renderSvg(grid: Grid, metric: Metric, summary: Summary, title: s
     .t{font-size:16px;font-weight:700;fill:var(--fg);letter-spacing:-.01em}
     .s{font-size:11px}
     .v{font-weight:600;fill:var(--fg)}
+    a:hover .c{fill:var(--fg)}
     ${[0, 1, 2, 3, 4].map((level) => `.l${level}{fill:var(--l${level})}`).join('')}`;
 
 	const parts: string[] = [];
@@ -99,5 +105,13 @@ export function renderSvg(grid: Grid, metric: Metric, summary: Summary, title: s
 	);
 	parts.push(`<text x="${legendX + 5 * STEP + 3}" y="${legendY + 9}">More</text>`);
 
-	return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><style>${style}</style>${parts.join('')}</svg>\n`;
+	const creditLine = credit ? creditText(width) : null;
+	if (creditLine) {
+		const url = esc(promoUrl('svg'));
+		parts.push(
+			`<a href="${url}" xlink:href="${url}" target="_blank"><text class="c" x="${PAD}" y="${legendY + 9}">${esc(creditLine)}</text></a>`
+		);
+	}
+
+	return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><style>${style}</style>${parts.join('')}</svg>\n`;
 }

@@ -25,6 +25,16 @@ export const dim = (text: string) => (color ? `\x1b[2m${text}${RESET}` : text);
 export const bold = (text: string) => (color ? `\x1b[1m${text}${RESET}` : text);
 
 /**
+ * Make text a clickable link (OSC 8 escape) in terminals that support it; others show the
+ * text alone. Off without a colour TTY, so piped output carries no escape codes.
+ *
+ * @returns the text wrapped in hyperlink escapes, or unchanged.
+ * Called by: cli (footer).
+ * Calls: nothing.
+ */
+export const link = (url: string, text: string) => (color ? `\x1b]8;;${url}\x1b\\${text}\x1b]8;;\x1b\\` : text);
+
+/**
  * Colour text with a 24-bit foreground from a `#rrggbb` hex string.
  *
  * @returns the string wrapped in truecolor escape codes, or unchanged without colour.

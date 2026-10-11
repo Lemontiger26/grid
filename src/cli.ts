@@ -8,7 +8,8 @@ import type { Grid, Metric, Summary, ToolFilter } from '../types/grid';
 import { dayKey } from './days';
 import { buildGrid, fmt, gridStart, isMetric, isToolFilter, METRIC_LABEL, summarize } from './grid';
 import { renderSvg } from './render/svg';
-import { bold, dim, renderGrid } from './render/terminal';
+import { promoUrl, footerText, SITE } from './promo';
+import { bold, dim, link, renderGrid } from './render/terminal';
 import { loadClaude } from './sources/claude';
 import { loadCodex } from './sources/codex';
 import { loadGit } from './sources/git';
@@ -27,6 +28,7 @@ Usage: tigergrid [options]
       --no-git          skip the git scan
       --svg <file>      also write an embeddable SVG
       --json            print per-day data as JSON instead of the graph
+      --no-promo        hide the tigertrack.dev footer line and the SVG credit
   -h, --help
 
 Sources: Claude Code transcripts, Codex rollouts, and git repos under --git-root.
@@ -47,6 +49,7 @@ const { values: args } = parseArgs({
 		'no-git': { type: 'boolean', default: false },
 		svg: { type: 'string' },
 		json: { type: 'boolean', default: false },
+		'no-promo': { type: 'boolean', default: false },
 		help: { type: 'boolean', short: 'h', default: false }
 	}
 });
@@ -110,16 +113,26 @@ function printJson(days: Days) {
 }
 
 /**
+ * Select the aggregates that fall inside the grid's window (start to today).
+ *
+ * @returns the in-window days, in no particular order.
+ * Called by: printSummary, main (footer).
+ * Calls: nothing.
+ */
+const daysInView = (days: Days, grid: Grid): Day[] =>
+	[...days.entries()].filter(([key]) => key >= grid.start && key <= grid.end).map(([, day]) => day);
+
+/**
  * Print the stats block under the graph: streaks and busiest day for the chosen metric,
  * then window totals for every source regardless of metric (sessions/prompts/tokens per tool,
  * commits and the AI-assisted share) and the top five projects by prompts.
  *
  * @returns nothing; writes to stdout.
  * Called by: main.
- * Calls: fmt, dim; the local helpers row, sum and sessions.
+ * Calls: daysInView, fmt, dim; the local helpers row, sum and sessions.
  */
 function printSummary(days: Days, grid: Grid, summary: Summary, filter: ToolFilter, withGit: boolean) {
-	const inView = [...days.entries()].filter(([key]) => key >= grid.start && key <= grid.end).map(([, day]) => day);
+	const inView = daysInView(days, grid);
 	/** Sum a per-day quantity over the visible window. Called by: printSummary. Calls: nothing. */
 	const sum = (pick: (day: Day) => number) => inView.reduce((total, day) => total + pick(day), 0);
 	/** Count distinct sessions of one tool in the window (a session spanning days counts once). Called by: printSummary. Calls: nothing. */
@@ -156,13 +169,27 @@ function printSummary(days: Days, grid: Grid, summary: Summary, filter: ToolFilt
 }
 
 /**
+ * Print the one-line pointer to TigerTrack under the summary. In a colour terminal the domain
+ * is a clickable link carrying UTM tags; piped output shows the plain URL instead.
+ *
+ * @returns nothing; writes to stdout.
+ * Called by: main.
+ * Calls: daysInView, footerText, link, promoUrl, dim.
+ */
+function printFooter(days: Days, grid: Grid, withGit: boolean) {
+	const commits = withGit ? daysInView(days, grid).reduce((total, day) => total + day.commits, 0) : null;
+	const target = link(promoUrl('cli'), process.stdout.isTTY ? 'tigertrack.dev' : SITE);
+	console.log(`  ${dim(footerText(commits))} ${target}`);
+}
+
+/**
  * Entry point: validate flags, load all sources in parallel from the start of the grid
  * window, then either dump JSON or print the graph and summary, and write the SVG if asked.
  *
  * @returns resolves when output is written; exits early on `--help`, bad flags, or `--json`.
  * Called by: module top level.
  * Calls: die, isMetric, isToolFilter, gitAuthors, loadClaude, loadCodex, loadGit, printJson,
- *        buildGrid, summarize, renderGrid, printSummary, renderSvg.
+ *        buildGrid, summarize, renderGrid, printSummary, printFooter, renderSvg.
  */
 async function main() {
 	if (args.help) {
@@ -210,12 +237,13 @@ async function main() {
 	console.log();
 	printSummary(days, grid, summary, filter, withGit);
 	console.log();
+	if (!args['no-promo']) printFooter(days, grid, withGit);
 	console.log(dim(`  scanned ${claudeFiles} Claude + ${codexFiles} Codex transcripts, ${repos} repos in ${elapsed}s`));
 
 	if (args.svg) {
 		const path = resolve(args.svg);
 		const title = isGitMetric ? 'Git activity' : `Agent activity · ${scope}`;
-		await Bun.write(path, renderSvg(grid, metric, summary, title));
+		await Bun.write(path, renderSvg(grid, metric, summary, title, !args['no-promo']));
 		console.log(dim(`  wrote ${path}`));
 	}
 	console.log();

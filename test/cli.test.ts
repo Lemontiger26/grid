@@ -39,8 +39,9 @@ describe('--json', () => {
 	const rows = JSON.parse(stdout) as JsonDay[];
 	const byDate = Object.fromEntries(rows.map((result) => [result.date, result]));
 
-	test('exits cleanly with one row per active day, sorted by date', () => {
+	test('exits cleanly with one row per active day, sorted by date, and no footer', () => {
 		expect(code).toBe(0);
+		expect(stdout).not.toContain('tigertrack.dev');
 		expect(rows.map((result) => result.date)).toEqual([
 			'2026-08-01',
 			'2026-09-08',
@@ -88,6 +89,20 @@ describe('terminal output', () => {
 		expect(result.stdout).toContain('5 prompts in the last 520 weeks · Claude Code');
 		expect(result.stdout).not.toMatch(/Codex\s+\d+ sessions/);
 	});
+
+	test('ends with a footer pointing to TigerTrack, using the commit count in view', () => {
+		// Piped output: no escape codes, the plain URL instead of a hyperlinked domain.
+		expect(stdout).toContain('→ 5 commits in view. See them as billable hours at https://tigertrack.dev');
+	});
+
+	test('without git, the footer has no count', () => {
+		const result = cli('--no-git', ...FIXTURE_ARGS);
+		expect(result.stdout).toContain('→ See your agent work as billable hours at https://tigertrack.dev');
+	});
+
+	test('--no-promo drops the footer', () => {
+		expect(cli('--no-promo', ...FIXTURE_ARGS).stdout).not.toContain('tigertrack.dev');
+	});
 });
 
 describe('--svg', () => {
@@ -99,6 +114,14 @@ describe('--svg', () => {
 		const svg = readFileSync(path, 'utf8');
 		expect(svg).toContain('Git activity');
 		expect(svg).toContain('AI-assisted commits');
+		expect(svg).toContain('Made with TigerGrid · tigertrack.dev');
+		expect(svg).toContain('href="https://tigertrack.dev/?utm_source=tigergrid&#38;utm_medium=svg"');
+	});
+
+	test('--no-promo leaves the credit out of the SVG', () => {
+		const path = join(out, 'no-promo.svg');
+		cli('--svg', path, '--no-promo', ...FIXTURE_ARGS);
+		expect(readFileSync(path, 'utf8')).not.toContain('tigertrack.dev');
 	});
 });
 
