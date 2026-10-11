@@ -1,9 +1,9 @@
 import { fmt } from './grid';
 
-// TigerGrid is the open-source way in to TigerTrack ("your development activity, across tools
-// and projects"). It shows local activity and points to what Track adds: history across machines,
-// projects, and work linked to issues. It never promises hours or billing: those belong to Track's
-// optional Ledger module. Both links can be turned off with --no-promo.
+// TigerGrid shows local activity and points to what the optional hosted TigerTrack adds:
+// history across machines, projects, and work linked to issues. It only describes what Track
+// does with activity; it doesn't promise hours or billing. Both links can be turned off with
+// --no-promo.
 
 export const SITE = 'https://tigertrack.dev';
 
