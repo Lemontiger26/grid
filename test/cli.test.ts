@@ -113,6 +113,7 @@ describe('--svg', () => {
 		expect(existsSync(path)).toBe(true);
 		const svg = readFileSync(path, 'utf8');
 		expect(svg).toContain('Git activity');
+		expect(svg).toContain('ui-monospace'); // matrix by default, like the terminal
 		expect(svg).toContain('AI-assisted commits');
 		expect(svg).toContain('Made with TigerGrid · tigertrack.dev');
 		expect(svg).toContain('href="https://tigertrack.dev/?utm_source=tigergrid&#38;utm_medium=svg"');

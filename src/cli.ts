@@ -273,7 +273,7 @@ async function main() {
 	if (args.svg) {
 		const path = resolve(args.svg);
 		const title = isGitMetric ? 'Git activity' : `Agent activity · ${scope}`;
-		await Bun.write(path, renderSvg(grid, metric, summary, title, !args['no-promo']));
+		await Bun.write(path, renderSvg(grid, metric, summary, title, { cells, credit: !args['no-promo'] }));
 		console.log(dim(`  wrote ${path}`));
 	}
 	console.log();
