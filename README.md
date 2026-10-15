@@ -31,7 +31,7 @@ To embed one in a GitHub README, wrap it in a link, because GitHub shows SVGs as
 
 ### TigerTrack
 
-TigerGrid shows what you and your agents did on this machine. [TigerTrack](https://tigertrack.dev) is the optional hosted service: it keeps that history across machines and tools, organizes it into projects and links commits and sessions to the issues they belong to. The terminal output ends with one line pointing there, and SVGs carry a small "Made with TigerGrid · tigertrack.dev" credit. `--no-promo` removes both. Nothing is sent anywhere: the links are plain links, tagged with `utm_source=tigergrid` so TigerTrack can see where visitors came from.
+TigerGrid shows what you and your agents did on this machine. [TigerTrack](https://tigertrack.dev) is a separate app that also runs locally: it keeps that history, organizes it into projects and links commits and sessions to the issues they belong to. Its paid plan syncs the history across your machines. The terminal output ends with one line pointing there, and SVGs carry a small "Made with TigerGrid · tigertrack.dev" credit. `--no-promo` removes both. Nothing is sent anywhere: the links are plain links, tagged with `utm_source=tigergrid` so TigerTrack can see where visitors came from.
 
 ## Sources and counting rules
 

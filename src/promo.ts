@@ -1,7 +1,7 @@
 import { fmt } from './grid';
 
-// TigerGrid shows local activity and points to what the optional hosted TigerTrack adds:
-// history across machines, projects, and work linked to issues. It only describes what Track
+// TigerGrid shows local activity and points to what TigerTrack, a separate local app, adds:
+// projects, work linked to issues, and (on its paid plan) history synced across machines. It only describes what Track
 // does with activity; it doesn't promise hours or billing. Both links can be turned off with
 // --no-promo.
 
