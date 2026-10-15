@@ -113,6 +113,7 @@ describe('--svg', () => {
 		expect(existsSync(path)).toBe(true);
 		const svg = readFileSync(path, 'utf8');
 		expect(svg).toContain('Git activity');
+		expect(svg).toContain('ui-monospace'); // matrix by default, like the terminal
 		expect(svg).toContain('AI-assisted commits');
 		expect(svg).toContain('Made with TigerGrid · tigertrack.dev');
 		expect(svg).toContain('href="https://tigertrack.dev/?utm_source=tigergrid&#38;utm_medium=svg"');
@@ -142,6 +143,31 @@ describe('argument errors', () => {
 		const result = cli('-m', 'vibes');
 		expect(result.code).toBe(1);
 		expect(result.stderr).toContain('tigergrid: unknown metric "vibes"');
+	});
+
+	test('an unknown cell style or theme exits 1', () => {
+		expect(cli('--cells', 'round').stderr).toContain('tigergrid: unknown cell style "round"');
+		expect(cli('--theme', 'solarized').stderr).toContain('tigergrid: unknown theme "solarized"');
+	});
+
+	test('both cell styles render', () => {
+		for (const style of ['wide', 'matrix']) {
+			const result = cli('--cells', style, '--theme', 'light', ...FIXTURE_ARGS);
+			expect(result.code).toBe(0);
+			expect(result.stdout).toContain('Mon ');
+			expect(result.stdout).not.toContain('Less');
+		}
+	});
+
+	test('matrix is the default: two columns per week', () => {
+		const grid = cli('-w', '8', ...FIXTURE_ARGS.slice(2)).stdout.split('\n');
+		expect(grid.find((line) => line.startsWith('Mon '))).toHaveLength(4 + 8 * 2);
+	});
+
+	test('errors go to stderr alone, the usage text to stdout', () => {
+		const result = cli('-m', 'vibes');
+		expect(result.stderr.trim()).toBe('tigergrid: unknown metric "vibes"');
+		expect(result.stdout).toContain('Usage: tigergrid [options]');
 	});
 
 	test('an unknown tool exits 1', () => {

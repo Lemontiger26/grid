@@ -1,10 +1,37 @@
-import type { Grid, Metric } from '../../types/grid';
+import type { CellStyle, Grid, Metric, RenderOptions } from '../../types/grid';
 import { monthLabels, PALETTES } from '../grid';
 
 const color = process.stdout.isTTY && !process.env.NO_COLOR;
 const RESET = '\x1b[0m';
-const MONO = [' ·', ' ░', ' ▒', ' ▓', ' █'];
 const WEEKDAYS = ['Mon', '', 'Wed', '', 'Fri', '', ''];
+
+/**
+ * Cell styles: the glyph drawn in colour, the shade characters used without colour (pipes,
+ * NO_COLOR), and the width in columns per week. `matrix` (the default) is dense: a gap between
+ * weeks only, so a busy week reads as one bar. `wide` leaves gaps between days and weeks.
+ */
+const CELLS: Record<CellStyle, { glyph: string; mono: string[]; width: number }> = {
+	matrix: { glyph: '▐█', mono: [' ·', ' ░', ' ▒', ' ▓', ' █'], width: 2 },
+	wide: { glyph: '▆▆ ', mono: [' · ', '░░ ', '▒▒ ', '▓▓ ', '██ '], width: 3 }
+};
+
+/**
+ * Check that a CLI string names a cell style.
+ *
+ * @returns true (narrowing the type) for "matrix" or "wide".
+ * Called by: cli.
+ * Calls: nothing.
+ */
+export const isCellStyle = (value: string): value is CellStyle => value === 'wide' || value === 'matrix';
+
+/**
+ * Columns one week takes in a cell style, so the CLI can fit the window to the terminal.
+ *
+ * @returns 2 for `matrix`, 3 for `wide`.
+ * Called by: cli, renderGrid.
+ * Calls: nothing.
+ */
+export const cellWidth = (style: CellStyle): number => CELLS[style].width;
 
 /**
  * Wrap text in ANSI dim, or leave it plain when stdout isn't a colour TTY.
@@ -48,33 +75,38 @@ function fg(hex: string, text: string): string {
 }
 
 /**
- * Draw one two-character grid cell: a square in the metric's dark-theme colour for `level`,
- * or a shade character (· ░ ▒ ▓ █) when colour is off (pipes, NO_COLOR).
+ * Draw one grid cell: the style's glyph in the metric's colour for `level` from the light or
+ * dark ramp, or the style's shade character when colour is off.
  *
- * @returns the cell string, always two columns wide.
+ * @returns the cell string, always `cellWidth(options.cells)` columns wide.
  * Called by: renderGrid.
  * Calls: fg.
  */
-const cell = (metric: Metric, level: number) => (color ? fg(PALETTES[metric].dark[level]!, ' ■') : MONO[level]!);
+function cell(metric: Metric, level: number, options: RenderOptions): string {
+	const style = CELLS[options.cells];
+	return color ? fg(PALETTES[metric][options.theme][level]!, style.glyph) : style.mono[level]!;
+}
 
 /**
- * Render the grid for the terminal: a month header, seven weekday rows (Mon..Sun) with two
- * characters per week, and a Less→More legend. Month labels that would collide with the
- * next one are dropped; future days are left blank.
+ * Render the grid for the terminal: a month header, seven weekday rows (Mon..Sun) with one
+ * cell per week. Month labels that would collide with the next one are dropped;
+ * future days are left blank. No legend: darker or brighter means more, as on GitHub.
  *
  * @returns the multi-line string, ready to print.
  * Called by: cli.
- * Calls: monthLabels, cell, dim.
+ * Calls: monthLabels, cell, cellWidth, dim.
  */
-export function renderGrid(grid: Grid, metric: Metric): string {
+export function renderGrid(grid: Grid, metric: Metric, options: RenderOptions): string {
+	const width = cellWidth(options.cells);
 	const lines: string[] = [];
 
 	const labels = [...monthLabels(grid)];
 	let header = '    ';
 	labels.forEach(([column, name], index) => {
 		const next = labels[index + 1]?.[0] ?? Infinity;
-		if (next - column < 2) return;
-		header = header.padEnd(4 + column * 2) + ' ' + name;
+		// A label takes 4 characters (space + 3 letters); skip it if the next one starts sooner.
+		if ((next - column) * width < 4) return;
+		header = header.padEnd(4 + column * width) + ' ' + name;
 	});
 	lines.push(dim(header));
 
@@ -82,12 +114,9 @@ export function renderGrid(grid: Grid, metric: Metric): string {
 		let line = dim(WEEKDAYS[row]!.padEnd(4));
 		for (const column of grid.weeks) {
 			const day = column[row]!;
-			line += day.future ? '  ' : cell(metric, day.level);
+			line += day.future ? ' '.repeat(width) : cell(metric, day.level, options);
 		}
 		lines.push(line);
 	}
-
-	const legend = [0, 1, 2, 3, 4].map((level) => cell(metric, level)).join('');
-	lines.push('    ' + ' '.repeat(Math.max(0, grid.weeks.length * 2 - 16)) + dim('Less') + legend + dim(' More'));
 	return lines.join('\n');
 }

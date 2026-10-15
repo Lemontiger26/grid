@@ -41,3 +41,21 @@ export interface Summary {
 	longestStreak: number;
 	busiest: Cell | null;
 }
+
+/** How the terminal grid draws a day: `matrix` (▐█, dense, the default) or `wide` (▆▆, gaps both ways). */
+export type CellStyle = 'wide' | 'matrix';
+
+/** Which colour ramp the terminal grid uses; detected from the terminal unless --theme is given. */
+export type TerminalTheme = 'light' | 'dark';
+
+export interface RenderOptions {
+	cells: CellStyle;
+	theme: TerminalTheme;
+}
+
+export interface SvgOptions {
+	/** Same styles as the terminal: `matrix` (joined bars, monospace) or `wide` (rounded squares). */
+	cells: CellStyle;
+	/** The "Made with TigerGrid · tigertrack.dev" line; off with --no-promo. */
+	credit: boolean;
+}
